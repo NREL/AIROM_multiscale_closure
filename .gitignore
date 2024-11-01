@@ -1,0 +1,9 @@
+figures
+.vscode
+*/build/*
+*/__pycache__/*
+*.pyc
+*.out
+*/logs/*
+*/outputs/*
+*.pdf
