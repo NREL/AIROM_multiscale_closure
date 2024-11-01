@@ -1,6 +1,6 @@
 # AI Reduced Order Models for Multiscale Closures (AIROM-MC)
 
-See paper [Paper Link](arxiv.org/) for more info.
+Code necessary to reproduce results and figures from paper [Paper Link](arxiv.org/), see paper for more info.
 
 # License
 
