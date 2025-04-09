@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH --job-name=taogflubed
+#SBATCH --partition=standard
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=32
+#SBATCH --time=48:00:00
+#SBATCH --account=catmod
+#SBATCH --output=pyroout
+#SBATCH --error=pyroerr
+
+#module purge
+#module load conda
+#source activate yt
+#python write_stl_circle_on_cylinder.py constant/globalVars 60
+#source deactivate yt
+
+module purge
+module load openmpi
+source /projects/biocon/OpenFoamV9/OpenFOAM-9/etc/bashrc
+blockMesh
+transformPoints "rotate=((1 0 0) (0 0 1))"
+surfaceToPatch -tol 1e-5 circle.stl
+
+export newmeshdir=$(foamListTimes -latestTime)
+rm -rf constant/polyMesh/
+cp -r $newmeshdir/polyMesh ./constant
+rm -rf $newmeshdir
+sed -i 's/patch0/solidsinlet/g' ./constant/polyMesh/boundary
+sed -i 's/zone0/solidsinlet/g' ./constant/polyMesh/boundary
+
+cp -r 0.orig 0
+setFields
+decomposePar -fileHandler collated
+touch soln.foam
+srun -n 64 multiphaseEulerFoam -parallel -fileHandler collated
+reconstructPar -newTimes

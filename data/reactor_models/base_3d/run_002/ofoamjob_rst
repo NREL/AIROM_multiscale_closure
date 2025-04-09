@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH --job-name=flubed
+#SBATCH --partition=standard
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=32
+#SBATCH --time=48:00:00
+#SBATCH --account=plasticpyro
+#SBATCH --output=pyroout
+#SBATCH --error=pyroerr
+
+#module purge
+#module load conda
+#source activate yt
+#python write_stl_circle_on_cylinder.py constant/globalVars 60
+#source deactivate yt
+
+module purge
+source ~/ofoamv9.sh
+touch soln.foam
+srun -n 64 multiphaseEulerFoam -parallel -fileHandler collated
+reconstructPar -newTimes
